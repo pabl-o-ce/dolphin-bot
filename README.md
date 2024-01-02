@@ -10,4 +10,4 @@ GitHub Repository Link: https://github.com/pabl-o-ce/dolphin-llm-bot
 
 ![DOLPHIN ΔI](img/dolphin-ai.png)
 
-DOLPHIN ΔI Discord BØT
+# DOLPHIN ΔI Discord BØT
