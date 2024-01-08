@@ -1,5 +1,8 @@
 ![Dolphin ΔI](img/dolphin-ai.png)
 
+![Website](https://img.shields.io/website?url=https%3A%2F%2Fhuggingface.co%2Fcognitivecomputations&up_message=cognitivecomputations&logo=huggingface&label=huggingface)
+![Discord](https://img.shields.io/discord/1156064224225808488?logo=Discord&logoColor=%23ffffff&label=Discord&link=https%3A%2F%2Fdiscord.gg%2FtCMkMDDHwm)
+
 # Cognitive Computations: Dolphin ΔI B Ø T
 
 Discord bot for Cognitive Computations server, designed to expose and explore models and provide interactive experience for users.
