@@ -1,7 +1,7 @@
 ![Dolphin ΔI](img/dolphin-ai.png)
 
-![Static Badge](https://img.shields.io/badge/cognitive_computations-s?logo=huggingface&label=huggingface&link=https%3A%2F%2Fhuggingface.co%2Fcognitivecomputations)
-![Discord](https://img.shields.io/discord/1156064224225808488?logo=Discord&logoColor=%23ffffff&label=Discord&link=https%3A%2F%2Fdiscord.gg%2FtCMkMDDHwm)
+[![Static Badge](https://img.shields.io/badge/cognitive_computations-s?style=flat&logo=huggingface&label=huggingface)](https://huggingface.co/cognitivecomputations)
+[![Discord](https://img.shields.io/discord/1156064224225808488?logo=Discord&logoColor=%23ffffff&label=Discord&link=https%3A%2F%2Fdiscord.gg%2FtCMkMDDHwm)](https://discord.gg/tCMkMDDHwm)
 
 # Cognitive Computations: Dolphin ΔI B Ø T
 
