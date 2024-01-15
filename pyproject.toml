@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "dolphin-llm-bot"
+version = "0.1.0"
+description = "Cognitive Computations: Dolphin llm discord bot\u001b[D\u001b[D\u001b[D\u001b[D"
+authors = ["pabl-o-ce <cye@poscye.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+discord-py-interactions = "^5.11.0"
+python-dotenv = "^1.0.0"
+llama-cpp-python = "^0.2.27"
+langchain = "^0.1.0"
+langchain-community = "0.0.12"
+langchain-core = "^0.1.8"
+
+[tool.poetry.scripts]
+start-bot = "src:main:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
