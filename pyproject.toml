@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "dolphin-llm-bot"
+name = "dolphin-bot"
 version = "0.1.0"
-description = "Cognitive Computations: Dolphin llm discord bot\u001b[D\u001b[D\u001b[D\u001b[D"
+description = "Cognitive Computations: Dolphin bot"
 authors = ["pabl-o-ce <cye@poscye.com>"]
 license = "MIT"
 readme = "README.md"
