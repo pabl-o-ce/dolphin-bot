@@ -37,7 +37,7 @@ DOLPHIN_MAX_REQ=<max-req>" > .env
 ```sh
 poetry install
 ```
-For Cuda first install toolkit
+For CUDA first install toolkit and then:
 ```sh
 CMAKE_ARGS="-DLLAMA_CUBLAS=on" poetry install
 ```
