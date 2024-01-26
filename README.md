@@ -31,15 +31,19 @@ DOLPHIN_EMBED_URL=<link>
 DOLPHIN_EMBED_IMG=<image>
 DOLPHIN_CMD_SCOPE=<server>
 DOLPHIN_CMD_CHANNEL=<channel>
-DOLPHIN_MAX_REQ=<max-req>" > .env.example
+DOLPHIN_MAX_REQ=<max-req>" > .env
 ```
 2. Install packages using poetry:
 ```sh
 poetry install
 ```
+For Cuda first install toolkit
+```sh
+CMAKE_ARGS="-DLLAMA_CUBLAS=on" poetry install
+```
 3. Start bot:
 ```sh
-poetry run 
+poetry run python src/main.py
 ```
 
 ## Usage
