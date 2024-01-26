@@ -14,9 +14,13 @@ llama-cpp-python = "^0.2.27"
 langchain = "^0.1.0"
 langchain-community = "0.0.12"
 langchain-core = "^0.1.8"
+redis = "^5.0.1"
+openai = "^1.8.0"
+langchain-openai = "^0.0.2.post1"
+discord-py = "^2.3.2"
 
 [tool.poetry.scripts]
-start-bot = "src:main:main"
+start-bot = "main:main"
 
 [build-system]
 requires = ["poetry-core"]
