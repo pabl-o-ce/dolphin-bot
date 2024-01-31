@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+  bot:
+    build:
+      context: .
+    restart: on-failure
+    depends_on:
+      - redis
+    networks:
+      - dolphin-network
+    volumes:
+      - /mnt/v1/ai-models:/usr/src/app/models
+
+  redis:
+    hostname: dolphin-redis
+    restart: always
+    image: "redis:latest"
+    networks:
+      - dolphin-network
+
+networks:
+  dolphin-network:
+    driver: bridge
