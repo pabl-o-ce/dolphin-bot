@@ -20,6 +20,7 @@ load_dotenv()
 MODEL_FILE = os.getenv('MODEL_FILE')
 MODEL_NAME = os.getenv('MODEL_NAME')
 MODEL_PATH = os.getenv('MODEL_PATH')
+DOLPHIN_REDIS = os.getenv('DOLPHIN_REDIS')
 DOLPHIN_GPU_LAYERS = os.getenv('DOLPHIN_GPU_LAYERS')
 DOLPHIN_NTHREADS = os.getenv('DOLPHIN_NTHREADS')
 DOLPHIN_SYSTEM_PROMPT = os.getenv('DOLPHIN_SYSTEM_PROMPT')
@@ -113,7 +114,7 @@ class CommandsDolphin(Extension):
         try:
             self.concurrency += 1
             self.conversations[f"{ctx.author.id}_{conversation_id}_cancel"] = False
-            history = RedisChatMessageHistory(f"{ctx.author.id}", url="redis://127.0.0.1:6379")
+            history = RedisChatMessageHistory(f"{ctx.author.id}", url=f"redis://{DOLPHIN_REDIS}:6379")
             response = ""
             chat_template = self.get_chat_template(prompt=prompt, messages=history.messages)
             embeds = self.get_chat_embeds(ctx=ctx, prompt=prompt)
@@ -253,7 +254,7 @@ class CommandsDolphin(Extension):
             # Handle Show Button
             ####
             elif (component_split[1] == "show"):
-                history = RedisChatMessageHistory(component_split[-1], url="redis://localhost:6379")
+                history = RedisChatMessageHistory(component_split[-1], url=f"redis://{DOLPHIN_REDIS}:6379")
                 messages = history.messages
                 if (len(messages) == 0):
                     await ctx.send("You don't have nothing on chat!")
@@ -286,7 +287,7 @@ class CommandsDolphin(Extension):
             # Handle Send Chat Button
             ####
             elif (component_split[1] == "send" and author_id == component_split[-1]):
-                history = RedisChatMessageHistory(component_split[-1], url="redis://localhost:6379")
+                history = RedisChatMessageHistory(component_split[-1], url=f"redis://{DOLPHIN_REDIS}:6379")
                 user_dm = self.client.get_user(event.ctx.author.id)
                 messages = history.messages
                 formatted_messages = [
@@ -305,7 +306,7 @@ class CommandsDolphin(Extension):
             ####
             elif (component_split[1] == "clear" and author_id == component_split[-1]):
                 print("\n\nclear press button\n\n")
-                history = RedisChatMessageHistory(component_split[-1], url="redis://localhost:6379")
+                history = RedisChatMessageHistory(component_split[-1], url=f"redis://{DOLPHIN_REDIS}:6379")
                 history.clear()
                 await ctx.send("Chat clear!")
             ####
@@ -313,7 +314,7 @@ class CommandsDolphin(Extension):
             ####
             elif (component_split[1] == "regenerate" and author_id == component_split[-1]):
                 print("\n\nregenerate\n\n")
-                history = RedisChatMessageHistory(component_split[-1], url="redis://localhost:6379")
+                history = RedisChatMessageHistory(component_split[-1], url=f"redis://{DOLPHIN_REDIS}:6379")
                 if (len(history.messages) > 0):
                     messages = history.messages[:-2]
                     response = ""
