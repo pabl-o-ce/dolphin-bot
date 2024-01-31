@@ -18,12 +18,14 @@ Discord bot for Cognitive Computations server, designed to expose and explore mo
 To add Dolphin ΔI Bot to your Discord server, follow these simple steps:
 1. Create the .env file and set the env variables:
 ```sh
-echo "DISCORD_TOKEN=<discord-token>
+echo -m "DISCORD_TOKEN=<discord-token>
 
 MODEL_FILE=<model-filename>
 MODEL_NAME=<model-label>
 MODEL_PATH=<model-path>
+MODEL_PATH=/usr/src/app/models
 
+DOLPHIN_REDIS=dolphin-redis
 DOLPHIN_GPU_LAYERS=<gpu-layers>
 DOLPHIN_NTHREADS=<number-threads>
 DOLPHIN_SYSTEM_PROMPT=<system-prompt>
