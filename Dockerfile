@@ -1,6 +1,6 @@
 # ---------------------------------------
 # Runtime environment
-FROM nvidia/cuda:12.3.1-base-ubuntu22.04 as release
+FROM nvidia/cuda:12.3.2-base-ubuntu22.04 as release
 
 ENV TZ=Etc/UTC
 
