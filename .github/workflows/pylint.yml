@@ -10,21 +10,16 @@ jobs:
         python-version: ["3.11"]
     steps:
     - uses: actions/checkout@v3
-    - name: Install Poetry
-      run: |
-        curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
-        echo "$HOME/.poetry/bin" >> $GITHUB_PATH
-        source $HOME/.poetry/env
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
-      run: poetry install
-    - name: Install pylint
       run: |
         python -m pip install --upgrade pip
+        pip install poetry
         pip install pylint
+        poetry install
     - name: Analysing the code with pylint
       run: |
         pylint $(git ls-files '*.py')
