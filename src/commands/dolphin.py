@@ -44,7 +44,6 @@ class CommandsDolphin(Extension):
                 "name": name,
                 "file": f"{DOLPHIN_PATH}/{path}"
             })
-        # choice = [SlashCommandChoice(name=model["name"].split("/")[-1], value=index) for index, model in enumerate(self.models)]
         self.add_ext_check(self.a_check)
 
     async def a_check(self, ctx: SlashContext) -> bool:
