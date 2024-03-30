@@ -6,11 +6,15 @@ authors = ["pabl-o-ce <cye@poscye.com>"]
 license = "MIT"
 readme = "README.md"
 
+[[tool.poetry.source]]
+name = "llama-cpp-python-wheels"
+url = "https://jllllll.github.io/llama-cpp-python-cuBLAS-wheels/AVX512/cpu"
+
 [tool.poetry.dependencies]
 python = "^3.11"
 discord-py-interactions = "^5.11.0"
 python-dotenv = "^1.0.0"
-llama-cpp-python = "^0.2.27"
+llama-cpp-python = {version = ">=0.2.26", source = "llama-cpp-python-wheels"}
 langchain = "^0.1.0"
 langchain-community = "0.0.12"
 langchain-core = "^0.1.8"

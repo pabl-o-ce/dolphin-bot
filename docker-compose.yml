@@ -5,12 +5,19 @@ services:
     build:
       context: .
     restart: on-failure
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
     depends_on:
       - redis
     networks:
       - dolphin-network
     volumes:
-      - /mnt/v1/ai-models:/usr/src/app/models
+      - /home/cye/AI/models:/usr/src/app/models
 
   redis:
     hostname: dolphin-redis
