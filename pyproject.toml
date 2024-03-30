@@ -1,34 +1,37 @@
-[tool.poetry]
+[project]
+authors = [{name = "pabl-o-ce", email = "cye@poscye.com"}]
 name = "dolphin-bot"
 version = "0.1.0"
 description = "Cognitive Computations: Dolphin bot"
-authors = ["pabl-o-ce <cye@poscye.com>"]
-license = "MIT"
+license = {file = "LICENSE.txt"}
 readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "discord-py-interactions ==5.11.0",
+    "python-dotenv ==1.0.0",
+    "llama-cpp-python ==0.2.57",
+    "langchain ==0.1.13",
+    "langchain-community ==0.0.29",
+    "langchain-core ==0.1.36",
+    "redis ==5.0.1",
+    "openai ==1.14.3",
+    "langchain-openai ==0.1.1",
+    "discord-py ==2.3.2",
+]
 
-[[tool.poetry.source]]
-name = "llama-cpp-python-wheels"
-url = "https://jllllll.github.io/llama-cpp-python-cuBLAS-wheels/AVX512/cpu"
-
-[tool.poetry.dependencies]
-python = "^3.11"
-discord-py-interactions = "^5.11.0"
-python-dotenv = "^1.0.0"
-llama-cpp-python = {version = ">=0.2.26", source = "llama-cpp-python-wheels"}
-langchain = "^0.1.0"
-langchain-community = "0.0.28"
-langchain-core = "^0.1.8"
-redis = "^5.0.1"
-openai = "^1.8.0"
-langchain-openai = "^0.1.0"
-discord-py = "^2.3.2"
-
-[tool.poetry.scripts]
+[project.scripts]
 start-bot = "main:main"
 
-[tool.poetry.group.dev.dependencies]
-pylint = "^3.1.0"
+[project.optional-dependencies]
+dev = ["pylint == 3.1.0"]
+
+[tool.pip.dependency.llama-cpp-python]
+index-url = "https://jllllll.github.io/llama-cpp-python-cuBLAS-wheels/AVX512/cpu"
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = [
+    "packaging",
+    "setuptools",
+    "wheel",
+]
+build-backend = "setuptools.build_meta"
