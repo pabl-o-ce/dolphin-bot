@@ -23,16 +23,12 @@ ENV CMAKE_ARGS="-DLLAMA_CUBLAS=ON"
 # ENV CUDA_DOCKER_ARCH=all
 
 # Verify Python installation
-RUN python3 --version
+# RUN python3 --version
 
 # Install depencencies
 RUN pip3 install --no-cache-dir --upgrade pip
 
 RUN pip3 install llama-cpp-python>=0.2.56 --force-reinstall --only-binary=:all: --extra-index-url=https://jllllll.github.io/llama-cpp-python-cuBLAS-wheels/AVX2/cu121 --no-cache-dir
 RUN pip3 install discord-py-interactions>=5.11.0 python-dotenv>=1.0.0 langchain>=0.1.0 langchain-community>=0.0.12 langchain-core>=0.1.8 redis>=5.0.1 openai>=1.8.0 langchain-openai>=0.0.2.post1
-# --force-reinstall --only-binary=:all: --extra-index-url=https://jllllll.github.io/llama-cpp-python-cuBLAS-wheels/AVX2/cu121 
-# RUN /bin/bash -c "python3 -m pip install llama-cpp-python>=0.2.56 --only-binary=:all: --extra-index-url=https://jllllll.github.io/llama-cpp-python-cuBLAS-wheels/AVX2/cu121"
-
-# RUN /bin/bash -c "python3 -m pip install discord-py-interactions>=5.11.0 python-dotenv>=1.0.0 langchain>=0.1.0 langchain-community>=0.0.12 langchain-core>=0.1.8 redis>=5.0.1 openai>=1.8.0 langchain-openai>=0.0.2.post1"
 
 CMD ["python3", "src/main.py"]

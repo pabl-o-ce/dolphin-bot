@@ -16,11 +16,11 @@ discord-py-interactions = "^5.11.0"
 python-dotenv = "^1.0.0"
 llama-cpp-python = {version = ">=0.2.26", source = "llama-cpp-python-wheels"}
 langchain = "^0.1.0"
-langchain-community = "0.0.12"
+langchain-community = "0.0.28"
 langchain-core = "^0.1.8"
 redis = "^5.0.1"
 openai = "^1.8.0"
-langchain-openai = "^0.0.2.post1"
+langchain-openai = "^0.1.0"
 discord-py = "^2.3.2"
 
 [tool.poetry.scripts]
