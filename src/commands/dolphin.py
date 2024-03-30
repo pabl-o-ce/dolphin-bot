@@ -11,11 +11,15 @@ from interactions import slash_command, SlashCommandChoice, slash_option, \
     Embed, EmbedAuthor, EmbedFooter, Extension, OptionType, listen, File
 from interactions.ext.paginators import Paginator
 from interactions.api.events import Component
-from langchain_community.llms import LlamaCpp
+
 from langchain.callbacks.manager import CallbackManager
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
-from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, ChatMessage
+
 from langchain_community.chat_message_histories import RedisChatMessageHistory
+from langchain_community.llms import LlamaCpp
+
+from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, ChatMessage
+
 from utils.chat import Message, chat_messages_template
 
 load_dotenv()
@@ -50,8 +54,8 @@ class CommandsDolphin(Extension):
         print(f"Check Status:\nChannel:{ctx.channel.id == DOLPHIN_CMD_CHANNEL}")
         return bool(ctx.channel.id == DOLPHIN_CMD_CHANNEL)
 
-    def drop(self):
-        super().drop()
+    # def drop(self):
+    #     super().drop()
 
     @max_concurrency(bucket=Buckets.CHANNEL, concurrent=DOLPHIN_MAX_REQ)
     @slash_command(
@@ -131,7 +135,20 @@ class CommandsDolphin(Extension):
         repeat_penalty: float = 1.3,
         top_k: int = 50,
         top_p: float = 0.95
-    ):
+    ) -> None:
+        """
+        This function executes the command.
+        
+        Args:
+            ctx (SlashContext): The context of the command.
+            prompt (str): The prompt for the model.
+            model (int, optional): The model to use (default is 0).
+            max_new_tokens (int, optional): The maximum number of tokens to generate (default is 2048).
+            temperature (float, optional): The temperature parameter for text generation (default is 0.1).
+            repeat_penalty (float, optional): The repeat penalty parameter (default is 1.3).
+            top_k (int, optional): The top k parameter for text generation (default is 50).
+            top_p (float, optional): The top p parameter for text generation (default is 0.95).
+        """
         print("Command start")
         conversation_id = uuid.uuid4()
         try:
@@ -425,11 +442,11 @@ class CommandsDolphin(Extension):
 
     @command.pre_run
     async def command_pre_run(self, context, *args, **kwargs):
-        print("I ran before the command did!")
+        print(f"I ran before the command did! {args=}, {kwargs=}"")
 
     @command.post_run
     async def command_post_run(self, context, *args, **kwargs):
-        print("I ran after the command did!")
+        print(f"I ran after the command did! {args=}, {kwargs=}"")
 
     def get_chat_template(self, prompt: str, messages: List[ChatMessage]):
         chat_template = [
