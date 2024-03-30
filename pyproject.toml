@@ -27,7 +27,7 @@ discord-py = "^2.3.2"
 start-bot = "main:main"
 
 [tool.poetry.group.dev.dependencies]
-pylint = "^3.0.3"
+pylint = "^3.1.0"
 
 [build-system]
 requires = ["poetry-core"]
