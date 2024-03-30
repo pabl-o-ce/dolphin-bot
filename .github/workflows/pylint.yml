@@ -15,21 +15,8 @@ jobs:
       uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Run image Poetry
-      uses: abatilo/actions-poetry@v2
-      with:
-        poetry-version: ${{ matrix.poetry-version }}
-    - name: Setup a local virtual environment (if no poetry.toml file)
-      run: |
-        poetry config virtualenvs.create true --local
-        poetry config virtualenvs.in-project true --local
-    - uses: actions/cache@v3
-      name: Define a cache for the virtual environment based on the dependencies lock file
-      with:
-        path: ./.venv
-        key: venv-${{ hashFiles('poetry.lock') }}
     - name: Install the project dependencies
-      run: poetry install
+      run: pip install -U .[dev]
     - name: Analysing the code with pylint
       run: |
         pylint $(git ls-files '*.py')
