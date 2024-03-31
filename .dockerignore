@@ -13,6 +13,5 @@ __init__.py
 tests
 docs
 poetry.lock
-pyproject.toml
 img
 .vscode
