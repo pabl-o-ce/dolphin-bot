@@ -62,7 +62,7 @@ async def main():
         bot.reload_extension("commands.dolphin")
         # bot.load_extension("commands.cognitive")
         await bot.astart(TOKEN)
-    except Exception as e:
+    except ValueError:
         error_message = traceback.format_exc()
         print(error_message)
 
