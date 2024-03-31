@@ -5,7 +5,7 @@ This module contains the chat util function for bot.
 from typing import List
 from pydantic import BaseModel
 from langchain_community.chat_message_histories import RedisChatMessageHistory
-from langchain.schema.messages import AIMessage, ChatMessage, HumanMessage
+from langchain_core.messages import ChatMessage
 
 # Your original Message class
 
@@ -71,61 +71,61 @@ def chat_messages_template(messages: List[Message]) -> List[ChatMessage]:
     return messages
 
 
-def chat_messages_embeds(messages: List[Message]) -> List[ChatMessage]:
-    """
-    Converts a list of Message objects into a list of Discord embeds.
+# def chat_messages_embeds(messages: List[Message]) -> List[ChatMessage]:
+#     """
+#     Converts a list of Message objects into a list of Discord embeds.
 
-    Args:
-        messages (List[Message]): A list of Message objects.
+#     Args:
+#         messages (List[Message]): A list of Message objects.
 
-    Returns:
-        List[ChatMessage]: A list of Discord embeds (Embed objects).
+#     Returns:
+#         List[ChatMessage]: A list of Discord embeds (Embed objects).
 
-    This function iterates through the provided list of Message objects
-    and creates Discord embeds (Embed objects) based on the message content
-    and sender information. The embeds are designed to display the message
-    content, author name, author avatar, and a URL (DOLPHIN_EMBED_URL).
+#     This function iterates through the provided list of Message objects
+#     and creates Discord embeds (Embed objects) based on the message content
+#     and sender information. The embeds are designed to display the message
+#     content, author name, author avatar, and a URL (DOLPHIN_EMBED_URL).
 
-    If the message content exceeds 4094 characters (Discord's limit for
-    embed descriptions), the content is split into multiple embeds, with
-    each embed containing up to 4094 characters.
+#     If the message content exceeds 4094 characters (Discord's limit for
+#     embed descriptions), the content is split into multiple embeds, with
+#     each embed containing up to 4094 characters.
 
-    The function assumes the existence of HumanMessage and AIMessage classes,
-    which are subclasses of the Message class. The embeds are created differently
-    based on the message type (HumanMessage or AIMessage).
+#     The function assumes the existence of HumanMessage and AIMessage classes,
+#     which are subclasses of the Message class. The embeds are created differently
+#     based on the message type (HumanMessage or AIMessage).
 
-    Note: This function requires the 'ctx' and 'self.client.app.name' objects
-    to be available in the current context. It also assumes the existence of
-    the 'Embed', 'EmbedAuthor', and 'DOLPHIN_EMBED_URL' entities.
-    """
-    chat_embeds = []
-    for message in messages:
-        if isinstance(message) == HumanMessage:
-            chat_embeds.append(Embed(
-                description=f"{message.content[:4094]}",
-                author = EmbedAuthor(name=f"{ctx.author.display_name}",
-                icon_url=f"{ctx.author.avatar_url}",
-                url=f"{DOLPHIN_EMBED_URL}")
-            ))
-        elif isinstance(message) == AIMessage:
-            if len(message.content) <= 4094:
-                chat_embeds.append(Embed(
-                    description=f"{message.content[:4094]}",
-                    author = EmbedAuthor(name=f"{self.client.app.name}",
-                    icon_url=f"{DOLPHIN_EMBED_IMG}",
-                    url=f"{DOLPHIN_EMBED_URL}"),
-                ))
-            elif len(message.content) > 4094:
-                chat_embeds.append(Embed(
-                    description=f"{message.content[:4094]}",
-                    author = EmbedAuthor(name=f"{self.client.app.name}",
-                    icon_url=f"{DOLPHIN_EMBED_IMG}",
-                    url=f"{DOLPHIN_EMBED_URL}"),
-                ))
-                chat_embeds.append(Embed(
-                    description=f"{message.content[4095:6000]}",
-                ))
-    return chat_embeds
+#     Note: This function requires the 'ctx' and 'self.client.app.name' objects
+#     to be available in the current context. It also assumes the existence of
+#     the 'Embed', 'EmbedAuthor', and 'DOLPHIN_EMBED_URL' entities.
+#     """
+#     chat_embeds = []
+#     for message in messages:
+#         if isinstance(message) == HumanMessage:
+#             chat_embeds.append(Embed(
+#                 description=f"{message.content[:4094]}",
+#                 author = EmbedAuthor(name=f"{ctx.author.display_name}",
+#                 icon_url=f"{ctx.author.avatar_url}",
+#                 url=f"{DOLPHIN_EMBED_URL}")
+#             ))
+#         elif isinstance(message) == AIMessage:
+#             if len(message.content) <= 4094:
+#                 chat_embeds.append(Embed(
+#                     description=f"{message.content[:4094]}",
+#                     author = EmbedAuthor(name=f"{self.client.app.name}",
+#                     icon_url=f"{DOLPHIN_EMBED_IMG}",
+#                     url=f"{DOLPHIN_EMBED_URL}"),
+#                 ))
+#             elif len(message.content) > 4094:
+#                 chat_embeds.append(Embed(
+#                     description=f"{message.content[:4094]}",
+#                     author = EmbedAuthor(name=f"{self.client.app.name}",
+#                     icon_url=f"{DOLPHIN_EMBED_IMG}",
+#                     url=f"{DOLPHIN_EMBED_URL}"),
+#                 ))
+#                 chat_embeds.append(Embed(
+#                     description=f"{message.content[4095:6000]}",
+#                 ))
+#     return chat_embeds
 
 
 def chat_messages_regenerate(chat_id: str) -> List[ChatMessage]:
