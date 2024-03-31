@@ -9,7 +9,7 @@ requires-python = ">=3.11"
 dependencies = [
     "discord-py-interactions ==5.11.0",
     "python-dotenv ==1.0.0",
-    "llama-cpp-python ==0.2.57",
+    "llama-cpp-python ==0.2.56",
     "langchain ==0.1.13",
     "langchain-community ==0.0.29",
     "langchain-core ==0.1.36",
@@ -23,10 +23,9 @@ dependencies = [
 start-bot = "main:main"
 
 [project.optional-dependencies]
-dev = ["pylint == 3.1.0"]
-
-[tool.pip.dependency.llama-cpp-python]
-index-url = "https://jllllll.github.io/llama-cpp-python-cuBLAS-wheels/AVX512/cpu"
+dev = [
+    "pylint == 3.1.0"
+]
 
 [build-system]
 requires = [
