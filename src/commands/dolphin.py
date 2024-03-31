@@ -442,11 +442,11 @@ class CommandsDolphin(Extension):
 
     @command.pre_run
     async def command_pre_run(self, context, *args, **kwargs):
-        print(f"I ran before the command did! {args=}, {kwargs=}"")
+        print(f"I ran before the command did! {args=}, {kwargs=}")
 
     @command.post_run
     async def command_post_run(self, context, *args, **kwargs):
-        print(f"I ran after the command did! {args=}, {kwargs=}"")
+        print(f"I ran after the command did! {args=}, {kwargs=}")
 
     def get_chat_template(self, prompt: str, messages: List[ChatMessage]):
         chat_template = [
