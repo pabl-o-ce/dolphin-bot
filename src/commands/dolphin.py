@@ -1,3 +1,7 @@
+"""
+This module contains the dolphin command for bot.
+"""
+
 import asyncio
 import os
 import time
@@ -20,7 +24,7 @@ from langchain_community.llms import LlamaCpp
 
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, ChatMessage
 
-from utils.chat import Message, chat_messages_template
+from utils.chat import chat_messages_template
 
 load_dotenv()
 DOLPHIN_PATH = os.getenv('DOLPHIN_PATH')
@@ -36,8 +40,11 @@ DOLPHIN_CMD_CHANNEL = int(os.getenv('DOLPHIN_CMD_CHANNEL',str(118967052265351174
 DOLPHIN_MAX_REQ = int(os.getenv('DOLPHIN_MAX_REQ', str(1)))
 
 class CommandsDolphin(Extension):
+    """
+    This class contains the CommandsDolphin.
+    """
 
-    def __init__(self, bot) -> None:
+    def __init__(self) -> None:
         self.concurrency = 0
         self.conversations = {}
         models_strings = DOLPHIN_MODELS.split(",")
@@ -51,6 +58,9 @@ class CommandsDolphin(Extension):
         self.add_ext_check(self.a_check)
 
     async def a_check(self, ctx: SlashContext) -> bool:
+        """
+        This function contains the check validation.
+        """
         print(f"Check Status:\nChannel:{ctx.channel.id == DOLPHIN_CMD_CHANNEL}")
         return bool(ctx.channel.id == DOLPHIN_CMD_CHANNEL)
 
@@ -143,8 +153,10 @@ class CommandsDolphin(Extension):
             ctx (SlashContext): The context of the command.
             prompt (str): The prompt for the model.
             model (int, optional): The model to use (default is 0).
-            max_new_tokens (int, optional): The maximum number of tokens to generate (default is 2048).
-            temperature (float, optional): The temperature parameter for text generation (default is 0.1).
+            max_new_tokens (int, optional): The maximum number of tokens
+            to generate (default is 2048).
+            temperature (float, optional): The temperature parameter for
+            text generation (default is 0.1).
             repeat_penalty (float, optional): The repeat penalty parameter (default is 1.3).
             top_k (int, optional): The top k parameter for text generation (default is 50).
             top_p (float, optional): The top p parameter for text generation (default is 0.95).
@@ -249,7 +261,7 @@ class CommandsDolphin(Extension):
                         await ctx.edit(embeds=embeds[:3], components=[cancel])
                     elif len(response) > 4094:
                         embeds[2].description = f"{response[:4094]}"
-                        embeds[2].footer = f""
+                        embeds[2].footer = ""
                         embeds[3].description = f"{response[4095:5700]}"
                         # re = embeds + embed + embed_extra
                         await ctx.edit(embeds=embeds, components=[cancel])
@@ -275,8 +287,8 @@ class CommandsDolphin(Extension):
                 history.add_user_message(f"{prompt}")
                 history.add_ai_message(f"{response}")
 
-        except Exception as e:
-            print(f"Error occurred in command: {e}")
+        except Exception:
+            print(f"Error occurred in command: {Exception}")
 
         finally:
             print("llama end")
@@ -286,6 +298,9 @@ class CommandsDolphin(Extension):
 
     @listen()
     async def an_event_handler(self, event: Component):
+        """
+        Listen an_event_handler function
+        """
         author_id = f"{event.ctx.author.id}"
         ctx = event.ctx
         component_split = ctx.custom_id.split("_")
@@ -437,18 +452,30 @@ class CommandsDolphin(Extension):
 
     @command.error
     async def command_error(self, e, *args, **kwargs):
+        """
+        Command error function handle error event
+        """
         print(f"Command hit error with {args=}, {kwargs=}")
         print(e)
 
     @command.pre_run
     async def command_pre_run(self, context, *args, **kwargs):
+        """
+        Command pre-run function event
+        """
         print(f"I ran before the command did! {args=}, {kwargs=}")
 
     @command.post_run
     async def command_post_run(self, context, *args, **kwargs):
+        """
+        Command post-run function event
+        """
         print(f"I ran after the command did! {args=}, {kwargs=}")
 
     def get_chat_template(self, prompt: str, messages: List[ChatMessage]):
+        """
+        function get_chat_template
+        """
         chat_template = [
             SystemMessage(
                 content=f"<|im_start|>system\n{DOLPHIN_SYSTEM_PROMPT}<|im_end|>\n"
@@ -460,6 +487,9 @@ class CommandsDolphin(Extension):
         return chat_template
 
     def get_chat_embeds(self, ctx: SlashContext, prompt: str, model_name: str) -> List[Embed]:
+        """
+        function get_chat_embeds
+        """
         chat_embeds = [
             Embed(
                 description=f"**System Prompt**\n{DOLPHIN_SYSTEM_PROMPT}",
@@ -499,4 +529,7 @@ class CommandsDolphin(Extension):
 
 
 def setup(bot):
+    """
+    Setup def for CommandsDolphin
+    """
     CommandsDolphin(bot)
