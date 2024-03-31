@@ -13,7 +13,7 @@ COPY . /usr/src/app
 
 RUN apt-get update && apt-get upgrade -y \
     && apt-get install -y git build-essential \
-    python3 python3-pip gcc wget \
+    python3.11 python3-pip gcc wget \
     ocl-icd-opencl-dev opencl-headers clinfo \
     libclblast-dev libopenblas-dev \
     && mkdir -p /etc/OpenCL/vendors && echo "libnvidia-opencl.so.1" > /etc/OpenCL/vendors/nvidia.icd
@@ -21,6 +21,10 @@ RUN apt-get update && apt-get upgrade -y \
 # Set environment variable
 ENV CMAKE_ARGS="-DLLAMA_CUBLAS=ON"
 # ENV CUDA_DOCKER_ARCH=all
+
+# Set Python 3.11 as the default Python version
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1
+RUN update-alternatives --config python3
 
 # Verify Python installation
 # RUN python3 --version
