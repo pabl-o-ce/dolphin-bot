@@ -5,6 +5,7 @@ This module contains the main function for bot.
 import logging
 import os
 import asyncio
+import traceback
 
 from dotenv import load_dotenv
 from interactions import Client, Intents, listen
@@ -62,8 +63,8 @@ async def main():
         # bot.load_extension("commands.cognitive")
         await bot.astart(TOKEN)
     except Exception as e:
-        print(f"Error occurred in command: {e}")
-        raise Exception(traceback.format_exc())
+        error_message = traceback.format_exc()
+        print(error_message)
 
 if __name__ == "__main__":
     asyncio.run(main())
