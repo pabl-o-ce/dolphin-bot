@@ -5,7 +5,7 @@ version = "0.1.0"
 description = "Cognitive Computations: Dolphin bot"
 license = {file = "LICENSE.txt"}
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.10"
 dependencies = [
     "discord-py-interactions ==5.11.0",
     "python-dotenv ==1.0.0",
