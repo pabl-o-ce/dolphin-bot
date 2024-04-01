@@ -1,4 +1,4 @@
-name: Pylint
+name: Python CI
 
 on: [push]
 
@@ -8,15 +8,16 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.11"]
-        poetry-version: ["1.8.2"]
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Install the project dependencies
-      run: pip install -U .[dev]
+    - name: Install, build the project dependencies
+      run: |
+        pip install -U pip
+        pip install -U .[dev]
     - name: Analysing the code with pylint
       run: |
         pylint $(git ls-files '*.py')
