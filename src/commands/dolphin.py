@@ -250,7 +250,7 @@ class CommandsDolphin(Extension):
             print(chat_template)
             for chunk in llm.stream(chat_template):
                 if self.conversations[f"{ctx.author.id}_{conversation_id}_cancel"] is True:
-                    llm.stop
+                    llm.stop # noqa: W0104
                     break
                 response += str(chunk)
                 current_time = time.time()
@@ -287,8 +287,8 @@ class CommandsDolphin(Extension):
                 history.add_user_message(f"{prompt}")
                 history.add_ai_message(f"{response}")
 
-        except Exception:
-            print(f"Error occurred in command: {Exception}")
+        except ImportError:
+            print(f"Error occurred in command: {ImportError}")
 
         finally:
             print("llama end")
@@ -459,14 +459,14 @@ class CommandsDolphin(Extension):
         print(e)
 
     @command.pre_run
-    async def command_pre_run(self, context, *args, **kwargs):
+    async def command_pre_run(self, *args, **kwargs):
         """
         Command pre-run function event
         """
         print(f"I ran before the command did! {args=}, {kwargs=}")
 
     @command.post_run
-    async def command_post_run(self, context, *args, **kwargs):
+    async def command_post_run(self, *args, **kwargs):
         """
         Command post-run function event
         """
