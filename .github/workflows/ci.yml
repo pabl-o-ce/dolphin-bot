@@ -27,7 +27,7 @@ jobs:
         python -m venv venv
         source venv/bin/activate
         pip install -U pip
-        pip install -e .[dev]
+        pip install -U .[dev]
     - name: Analysing the code with pylint
       run: |
         pylint $(git ls-files '*.py')
