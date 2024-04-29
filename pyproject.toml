@@ -12,7 +12,7 @@ dependencies = [
     "llama-cpp-python ==0.2.65",
     "langchain ==0.1.13",
     "langchain-community ==0.0.29",
-    "langchain-core ==0.1.36",
+    "langchain-core ==0.1.46",
     "redis ==5.0.4",
     "openai ==1.14.3",
     "langchain-openai ==0.1.1",
