@@ -14,7 +14,7 @@ dependencies = [
     "langchain-community ==0.0.29",
     "langchain-core ==0.1.48",
     "redis ==5.0.4",
-    "openai ==1.14.3",
+    "openai ==1.25.0",
     "langchain-openai ==0.1.1",
     "discord-py ==2.3.2",
 ]
