@@ -16,13 +16,15 @@ from interactions import slash_command, SlashCommandChoice, slash_option, \
 from interactions.ext.paginators import Paginator
 from interactions.api.events import Component
 
-from langchain.callbacks.manager import CallbackManager
-from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
-
-from langchain_community.chat_message_histories import RedisChatMessageHistory
-from langchain_community.llms import LlamaCpp
-
-from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, ChatMessage
+from llama_index.core import SimpleDirectoryReader, VectorStoreIndex
+from llama_index.core.llms import ChatMessage, MessageRole
+from llama_index.llms.llama_cpp import LlamaCPP
+from llama_index.llms.llama_cpp.llama_utils import (
+    messages_to_prompt,
+    completion_to_prompt,
+)
+from llama_index.storage.chat_store.redis import RedisChatStore
+from llama_index.core.memory import ChatMemoryBuffer
 
 from utils.chat import chat_messages_template
 
@@ -44,9 +46,11 @@ class CommandsDolphin(Extension):
     This class contains the CommandsDolphin.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, bot) -> None:
+        self.bot = bot
         self.concurrency = 0
         self.conversations = {}
+        self.chat_store = RedisChatStore(redis_url=f"redis://{DOLPHIN_REDIS}:6379", ttl=300)
         models_strings = DOLPHIN_MODELS.split(",")
         self.models = []
         for model_str in models_strings:
@@ -88,10 +92,11 @@ class CommandsDolphin(Extension):
         required=False,
         opt_type=OptionType.INTEGER,
         choices=[
-            SlashCommandChoice(name="dolphin 2.8 mistral 7B v02", value=0),
-            SlashCommandChoice(name="dolphin 2.8 experiment26 7B", value=1),
-            SlashCommandChoice(name="dolphin 2.6 mistral 7B DPO", value=2),
-            SlashCommandChoice(name="laserxtral", value=3)
+            SlashCommandChoice(name="dolphin 2.9 llama 8B", value=0),
+            SlashCommandChoice(name="dolphin 2.8 mistral 7B v02", value=1),
+            SlashCommandChoice(name="dolphin 2.8 experiment26 7B", value=2),
+            SlashCommandChoice(name="dolphin 2.6 mistral 7B DPO", value=3),
+            SlashCommandChoice(name="laserxtral", value=4)
         ]
     )
     @slash_option(
@@ -169,12 +174,13 @@ class CommandsDolphin(Extension):
             print(model_selected["name"])
             self.concurrency += 1
             self.conversations[f"{ctx.author.id}_{conversation_id}_cancel"] = False
-            history = RedisChatMessageHistory(
-                f"{ctx.author.id}", 
-                url=f"redis://{DOLPHIN_REDIS}:6379"
+            history = ChatMemoryBuffer.from_defaults(
+                token_limit=4096,
+                chat_store=self.chat_store,
+                chat_store_key=f"{ctx.author.id}",
             )
             response = ""
-            chat_template = self.get_chat_template(prompt=prompt, messages=history.messages)
+            chat_template = self.get_chat_template(prompt=prompt, messages=history.get_all())
             embeds = self.get_chat_embeds(ctx=ctx, prompt=prompt, model_name=model_selected["name"])
             cancel = Button(
                 custom_id=f"button_cancel_{ctx.author.id}_{conversation_id}",
@@ -207,52 +213,37 @@ class CommandsDolphin(Extension):
             ]
             await ctx.defer()
 
-            # async def update_embed():
-            #     chunk_size = 200
-            #     res = ""
-            #     for i in range(0, len(response), chunk_size):
-            #         res += response[i:i + chunk_size]
-            #         if len(res) <= 4094:
-            #             embed.description = f"{res[:4094]}"
-            #             await ctx.edit(embed=embed, components=[])
-            #         elif len(res) > 4094:
-            #             embed.description = f"{res[:4094]}"
-            #             embed_extra.description = f"{res[4095:5700]}"
-            #             await ctx.edit(embeds=[embed,embed_extra], components=[])
-            #         await asyncio.sleep(0.06)
             print("llama start")
-            callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
-            llm = LlamaCpp(
+
+            llm = LlamaCPP(
                 model_path=model_selected["file"],
                 temperature=temperature,
-                max_tokens=max_new_tokens,
-                top_k=top_k,
-                top_p=top_p,
-                n_ctx=8192,
-                repeat_penalty=repeat_penalty,
-                n_threads=0,
-                n_gpu_layers=DOLPHIN_GPU_LAYERS,
-                callback_manager=callback_manager,
-                streaming=True,
-                verbose=True
+                max_new_tokens=max_new_tokens,
+                context_window=8192,
+                generate_kwargs={
+                    "top_k": top_k,
+                    "top_p": top_p,
+                    "repeat_penalty": repeat_penalty
+                },
+                model_kwargs={
+                    "n_threads": int(DOLPHIN_NTHREADS),
+                    "n_gpu_layers": int(DOLPHIN_GPU_LAYERS)
+                },
+                messages_to_prompt=messages_to_prompt,
+                completion_to_prompt=completion_to_prompt,
+                verbose=True,
             )
-
-            ## Async Stream (give me one chunk with all the response)
-
-            # async for chunk in llm.astream(chat_template):
-            #     response += str(chunk)
-            #     await update_embed()
 
             ## Stream (give me multiple chunks to form the response)
 
             update_interval = 0.6
             last_update_time = time.time()
-            print(chat_template)
-            for chunk in llm.stream(chat_template):
+
+            for chunk in llm.stream_chat(chat_template):
                 if self.conversations[f"{ctx.author.id}_{conversation_id}_cancel"] is True:
                     llm.stop # noqa: W0104
                     break
-                response += str(chunk)
+                response += str(chunk.delta)
                 current_time = time.time()
                 if current_time - last_update_time >= update_interval:
                     last_update_time = current_time
@@ -263,7 +254,6 @@ class CommandsDolphin(Extension):
                         embeds[2].description = f"{response[:4094]}"
                         embeds[2].footer = ""
                         embeds[3].description = f"{response[4095:5700]}"
-                        # re = embeds + embed + embed_extra
                         await ctx.edit(embeds=embeds, components=[cancel])
                     print(f"Embed updated at {time.strftime('%X')}", end="", flush=True)
 
@@ -284,8 +274,8 @@ class CommandsDolphin(Extension):
                     await ctx.edit(embeds=embeds[:3], components=components)
                 elif len(response) > 4094:
                     await ctx.edit(embeds=embeds, components=components)
-                history.add_user_message(f"{prompt}")
-                history.add_ai_message(f"{response}")
+                history.put(chat_template[-1])
+                history.put(ChatMessage(role=MessageRole.ASSISTANT,content=f"{response}"))
 
         except ImportError:
             print(f"Error occurred in command: {ImportError}")
@@ -316,18 +306,19 @@ class CommandsDolphin(Extension):
             # Handle Show Button
             ####
             elif component_split[1] == "show":
-                history = RedisChatMessageHistory(
-                    component_split[-1],
-                    url=f"redis://{DOLPHIN_REDIS}:6379"
+                history = ChatMemoryBuffer.from_defaults(
+                    token_limit=4096,
+                    chat_store=self.chat_store,
+                    chat_store_key=f"{component_split[-1]}",
                 )
-                messages = history.messages
+                messages = history.get_all()
                 if len(messages) == 0:
                     await ctx.send("You don't have nothing on chat!")
                 else:
                     chat_embeds = []
                     user = await self.client.fetch_user(int(component_split[-1]))
                     for message in messages:
-                        if isinstance(message) == HumanMessage:
+                        if message.role == "user":
                             chat_embeds.append(Embed(
                                 description=f"{message.content}",
                                 author = EmbedAuthor(
@@ -337,7 +328,7 @@ class CommandsDolphin(Extension):
                                     )
                                 )
                             )
-                        elif isinstance(message) == AIMessage:
+                        elif message.role == "assistant":
                             if len(message.content) <= 4094:
                                 chat_embeds.append(Embed(
                                     description=f"{message.content[:4094]}",
@@ -365,15 +356,16 @@ class CommandsDolphin(Extension):
             # Handle Send Chat Button
             ####
             elif component_split[1] == "send" and author_id == component_split[-1]:
-                history = RedisChatMessageHistory(
-                    component_split[-1],
-                    url=f"redis://{DOLPHIN_REDIS}:6379"
+                history = ChatMemoryBuffer.from_defaults(
+                    token_limit=4096,
+                    chat_store=self.chat_store,
+                    chat_store_key=f"{component_split[-1]}",
                 )
                 user_dm = self.client.get_user(event.ctx.author.id)
-                messages = history.messages
+                messages = history.get_all()
                 formatted_messages = [
                     f"{ctx.author.display_name}:{message.content}\n"
-                    if isinstance(message, HumanMessage)
+                    if message.role == "user"
                     else f"{self.client.app.name}:{message.content}\n"
                     for message in messages
                 ]
@@ -395,51 +387,57 @@ class CommandsDolphin(Extension):
             ####
             elif (component_split[1] == "clear" and author_id == component_split[-1]):
                 print("\n\nclear press button\n\n")
-                history = RedisChatMessageHistory(
-                    component_split[-1],
-                    url=f"redis://{DOLPHIN_REDIS}:6379"
+                history = ChatMemoryBuffer.from_defaults(
+                    token_limit=4096,
+                    chat_store=self.chat_store,
+                    chat_store_key=f"{component_split[-1]}",
                 )
-                history.clear()
+                history.reset()
                 await ctx.send("Chat clear!")
             ####
             # Handle Regenerate Button
             ####
             elif (component_split[1] == "regenerate" and author_id == component_split[-2]):
                 print("\n\nregenerate\n\n")
-                history = RedisChatMessageHistory(
-                    component_split[-2],
-                    url=f"redis://{DOLPHIN_REDIS}:6379"
+                history = ChatMemoryBuffer.from_defaults(
+                    token_limit=4096,
+                    chat_store=self.chat_store,
+                    chat_store_key=f"{component_split[-1]}",
                 )
-                if len(history.messages) > 0:
+                history_messages = history.get_all()
+                if len(history_messages) > 0:
                     model_selected=self.models[int(component_split[-1])]
-                    messages = history.messages[:-2]
+                    messages = history_messages[:-2]
                     response = ""
                     chat_template = self.get_chat_template(
-                        prompt=history.messages[-2].content,
+                        prompt=history_messages[-2].content,
                         messages=messages
                     )
                     embeds = self.get_chat_embeds(
-                        ctx=ctx, prompt=history.messages[-2].content,
+                        ctx=ctx, prompt=history_messages[-2].content,
                         model_name=model_selected["name"]
                     )
                     print(chat_template)
-                    callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
-                    llm = LlamaCpp(
+                    llm = LlamaCPP(
                         model_path=model_selected["file"],
                         temperature=0.1,
-                        max_tokens=2048,
-                        top_k=50,
-                        top_p=0.95,
-                        n_ctx=8192,
-                        repeat_penalty=1.3,
-                        n_threads=DOLPHIN_NTHREADS,
-                        n_gpu_layers=DOLPHIN_GPU_LAYERS,
-                        callback_manager=callback_manager,
-                        streaming=True,
-                        verbose=True
+                        max_new_tokens=4096,
+                        context_window=8192,
+                        generate_kwargs={
+                            "top_k": 50,
+                            "top_p": 0.95,
+                            "repeat_penalty": 1.3
+                        },
+                        model_kwargs={
+                            "n_threads": int(DOLPHIN_NTHREADS),
+                            "n_gpu_layers": int(DOLPHIN_GPU_LAYERS)
+                        },
+                        messages_to_prompt=messages_to_prompt,
+                        completion_to_prompt=completion_to_prompt,
+                        verbose=True,
                     )
                     await ctx.defer()
-                    response = await llm.ainvoke(chat_template)
+                    response = await llm.chat(chat_template)
                     print(response)
                     if len(response) <= 4094:
                         embeds[2].description = f"{response[:4094]}"
@@ -477,13 +475,13 @@ class CommandsDolphin(Extension):
         function get_chat_template
         """
         chat_template = [
-            SystemMessage(
+            ChatMessage(
+                role=MessageRole.SYSTEM,
                 content=f"<|im_start|>system\n{DOLPHIN_SYSTEM_PROMPT}<|im_end|>\n"
             )
         ]
-        chat_template.extend(chat_messages_template(messages))
-        chat_template.extend(chat_messages_template([HumanMessage(content=f"{prompt}")]))
-        chat_template.append(AIMessage(content="<|im_start|>assistant:"))
+        chat_template.extend(messages)
+        chat_template.extend([ChatMessage(role=MessageRole.USER,content=f"{prompt}")])
         return chat_template
 
     def get_chat_embeds(self, ctx: SlashContext, prompt: str, model_name: str) -> List[Embed]:
