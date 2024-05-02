@@ -20,10 +20,8 @@ To add Dolphin ΔI Bot to your Discord server, follow these simple steps:
 ```sh
 echo -m "DISCORD_TOKEN=<discord-token>
 
-MODEL_FILE=<model-filename>
-MODEL_NAME=<model-label>
-MODEL_PATH=<model-path>
-MODEL_PATH=/usr/src/app/models
+DOLPHIN_PATH=/usr/src/app/models
+DOLPHIN_MODELS=<models>
 
 DOLPHIN_REDIS=dolphin-redis
 DOLPHIN_GPU_LAYERS=<gpu-layers>
@@ -37,15 +35,15 @@ DOLPHIN_MAX_REQ=<max-req>" > .env
 ```
 2. Install packages using poetry:
 ```sh
-poetry install
+pip install -U . --no-cache-dir
 ```
 For CUDA first install toolkit and then:
 ```sh
-CMAKE_ARGS="-DLLAMA_CUBLAS=on" poetry install
+CMAKE_ARGS="-DLLAMA_CUBLAS=on" pip install -U . --no-cache-dir
 ```
 3. Start bot:
 ```sh
-poetry run python src/main.py
+python src/main.py
 ```
 
 ## Usage
