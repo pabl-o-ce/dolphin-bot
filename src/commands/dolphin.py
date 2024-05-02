@@ -16,7 +16,7 @@ from interactions import slash_command, SlashCommandChoice, slash_option, \
 from interactions.ext.paginators import Paginator
 from interactions.api.events import Component
 
-from llama_index.core import SimpleDirectoryReader, VectorStoreIndex
+# from llama_index.core import SimpleDirectoryReader, VectorStoreIndex
 from llama_index.core.llms import ChatMessage, MessageRole
 from llama_index.llms.llama_cpp import LlamaCPP
 from llama_index.llms.llama_cpp.llama_utils import (
@@ -26,7 +26,7 @@ from llama_index.llms.llama_cpp.llama_utils import (
 from llama_index.storage.chat_store.redis import RedisChatStore
 from llama_index.core.memory import ChatMemoryBuffer
 
-from utils.chat import chat_messages_template
+# from utils.chat import chat_messages_template
 
 load_dotenv()
 DOLPHIN_PATH = os.getenv('DOLPHIN_PATH')
