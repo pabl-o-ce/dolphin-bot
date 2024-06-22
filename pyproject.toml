@@ -15,7 +15,7 @@ dependencies = [
     "llama-index-embeddings-huggingface ==0.2.0",
     "llama-index-storage-chat-store-redis ==0.1.3",
     "redis ==5.0.4",
-    "discord-py ==2.3.2",
+    "discord-py ==2.4.0",
 ]
 
 [project.scripts]
