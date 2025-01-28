@@ -23,7 +23,7 @@ start-bot = "main:main"
 
 [project.optional-dependencies]
 dev = [
-    "pylint ==3.2.3"
+    "pylint ==3.3.4"
 ]
 
 [build-system]
